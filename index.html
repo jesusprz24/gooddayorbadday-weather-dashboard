@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <header class="header-container">
+        <h1>Weather Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <!--Put info for search bar below-->
+        <div class="row">
+            <div class="light">
+                <h4 class="city">Search for a City</h4>
+                <div class="input-field">
+                    <input type="text" class="form-control" id="search-city">
+                    <div class="input-group-append">
+                        <button class="btn-primary" id="search-button"></button>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="button" id="clear-history">Clear History</button>
+                <ul class="list-group">
+
+                </ul>
+            </div>
+            <div class="col-sm-8">
+                <div class="border-rounded">
+                    <div class="col-sm-12" id="current-weather">
+                        <h3 class="city-name" id="current-city"></h3>
+                        <p>Temperature:</p>
+                        <p>Humidity:</p>
+                        <p>Wind Speed</p>
+                        <p>UV Index:</p>
+                    </div>
+                </div>
+                <div class="col-sm-12" id="future-weather">
+                    <h3>5 day Forecast</h3>
+                    <div class="primary-forecast">
+                        <p id="date"></p>
+                        <p id="image1"></p>
+                        <p>Temp:</p>
+                        <p>Humidity</p>
+                    </div>
+                    <div class="primary-forecast">
+                        <p id="date"></p>
+                        <p id="image1"></p>
+                        <p>Temp:</p>
+                        <p>Humidity</p>
+                    </div>
+                    <div class="primary-forecast">
+                        <p id="date"></p>
+                        <p id="image1"></p>
+                        <p>Temp:</p>
+                        <p>Humidity</p>
+                    </div>
+                    <div class="primary-forecast">
+                        <p id="date"></p>
+                        <p id="image1"></p>
+                        <p>Temp:</p>
+                        <p>Humidity</p>
+                    </div>
+                    <div class="primary-forecast">
+                        <p id="date"></p>
+                        <p id="image1"></p>
+                        <p>Temp:</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="./assets/script.js"></script>
+</body>
+</html>

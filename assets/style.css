@@ -1,0 +1,50 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 16px;
+}
+
+header {
+    text-align: center;
+    background-color: #404040;
+    color: white;
+    font-size: 20px;
+    background-image: linear-gradient(to right, blue, navy );
+}
+.container {
+    
+}
+
+.container h4 {
+    font-weight: bold;
+}
+
+.btn-primary {
+    
+}
+
+h3 {
+    font-weight: bold;
+}
+
+.forecast {
+    font-size: 0.9em;
+}
+
+span {
+    font-size: 1em;
+}
+
+li:hover {
+    background-color: lightslategray;
+    text-decoration: underline;
+}
+
+.primary-forecase {
+    color: white;
+    border-radius: 50%;
+    
+}
+
