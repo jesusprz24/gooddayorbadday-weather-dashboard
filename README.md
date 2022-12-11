@@ -12,7 +12,7 @@ WHEN I click on a city in the search history
 THEN I am again presented with current and future conditions for that city
 
 # Github URL:
-
+https://github.com/jesusprz24/gooddayorbadday-weather-dashboard
 
 # Live URL: 
-
+https://jesusprz24.github.io/gooddayorbadday-weather-dashboard/
