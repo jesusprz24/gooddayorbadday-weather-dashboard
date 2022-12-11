@@ -1,8 +1,7 @@
-console.log('Inside script.js');
 var city="";
+
 var searchCity = $("#search-city");
-// var searchButton = $("#search-button");
-var searchButton = document.getElementById('search-button');
+var searchButton = $("#search-button");
 var clearButton = $("#clear-history");
 var currentCity = $("#current-city");
 var currentTemperature = $("#temperature");
@@ -11,7 +10,7 @@ var currentWSpeed=$("#wind-speed");
 var currentUvindex= $("#uv-index");
 var sCity=[];
 
-
+//Does a search for the city to see if it exists or not
 function find(c){
     for (var i=0; i<sCity.length; i++){
         if(c.toUpperCase()===sCity[i]){
@@ -21,10 +20,9 @@ function find(c){
     return 1;
 }
 
-//API key?
+//API key
 var APIKey = "2413e37227e2ad900941674ac5d041df";
 
-//Displays the current weather and future weather when choosing the correct location
 function displayWeather(event){
     event.preventDefault();
     if(searchCity.val().trim()!==""){
@@ -33,46 +31,141 @@ function displayWeather(event){
     }
 }
 
-//AJAX key here
+//Using AJAX 
+function currentWeather(city){
 
-function retrieveCurrentWeather(currentCity) {
-    console.log(`The city searched for is ${currentCity}.`);
-    var geocodeUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${currentCity}&limit=1&appid=${APIKey}`;
-    let lat;
-    let long; 
-    fetch(geocodeUrl)
-    .then(response => {
-        return response.json();
-    })
-    .then(data => {
-        console.log('The gecode fetch result is', data);
-        // grab the lat/long from the data object and use it in the anext fetch
-        // The next fetch will use the ohter endpoint from OpenWeather
-        // lat = data[0]['lat'];
-        // long = data[0]['lon'];
-        // now you pass lat and long in the next fetch
-    })
+    var queryURL= "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=" + APIKey;
+    $.ajax({
+        url:queryURL,
+        method:"GET",
+    }).then(function(response){
+
+
+        console.log(response);
+
+        var weathericon= response.weather[0].icon;
+        var iconurl="https://openweathermap.org/img/wn/"+weathericon +"@2x.png";
+  
+        var date=new Date(response.dt*1000).toLocaleDateString();
+
+        $(currentCity).html(response.name +"("+date+")" + "<img src="+iconurl+">");
+
+
+        var tempF = (response.main.temp - 273.15) * 1.80 + 32;
+        $(currentTemperature).html((tempF).toFixed(2)+"&#8457");
+
+        //shows the humidity
+        $(currentHumidty).html(response.main.humidity+"%");
+
+        //wind speed
+        var ws=response.wind.speed;
+        var windsmph=(ws*2.237).toFixed(1);
+        $(currentWSpeed).html(windsmph+"MPH");
+   
+        //Uses geo cordinated to locate search
+        UVIndex(response.coord.lon,response.coord.lat);
+        forecast(response.id);
+        if(response.cod==200){
+            sCity=JSON.parse(localStorage.getItem("cityname"));
+            console.log(sCity);
+            if (sCity==null){
+                sCity=[];
+                sCity.push(city.toUpperCase()
+                );
+                localStorage.setItem("cityname",JSON.stringify(sCity));
+                addToList(city);
+            }
+            else {
+                if(find(city)>0){
+                    sCity.push(city.toUpperCase());
+                    localStorage.setItem("cityname",JSON.stringify(sCity));
+                    addToList(city);
+                }
+            }
+        }
+
+    });
 }
 
-function beginSearch() {
-    console.log('You clicked the search button');
-    var userInput = searchCity.val();
-    console.log(userInput);
-    if(!userInput) {
-        alert('Please enter a city to search.');
-    } else {
-        retrieveCurrentWeather(userInput);
+function UVIndex(ln,lt){
+
+
+    var uvqURL="https://api.openweathermap.org/data/2.5/uvi?appid="+ APIKey+"&lat="+lt+"&lon="+ln;
+    $.ajax({
+            url:uvqURL,
+            method:"GET"
+            }).then(function(response){
+                $(currentUvindex).html(response.value);
+            });
+}
+    
+// Should display the five day forecast for the weather dashboard
+function forecast(cityid){
+    var dayover= false;
+    var queryforcastURL="https://api.openweathermap.org/data/2.5/forecast?id="+cityid+"&appid="+APIKey;
+    $.ajax({
+        url:queryforcastURL,
+        method:"GET"
+    }).then(function(response){
+        
+        for (i=0;i<5;i++){
+            var date= new Date((response.list[((i+1)*8)-1].dt)*1000).toLocaleDateString();
+            var iconcode= response.list[((i+1)*8)-1].weather[0].icon;
+            var iconurl="https://openweathermap.org/img/wn/"+iconcode+".png";
+            var tempK= response.list[((i+1)*8)-1].main.temp;
+            var tempF=(((tempK-273.5)*1.80)+32).toFixed(2);
+            var humidity= response.list[((i+1)*8)-1].main.humidity;
+        
+            $("#fDate"+i).html(date);
+            $("#fImg"+i).html("<img src="+iconurl+">");
+            $("#fTemp"+i).html(tempF+"&#8457");
+            $("#fHumidity"+i).html(humidity+"%");
+        }
+        
+    });
+}
+
+
+function addToList(c){
+    var listEl= $("<li>"+c.toUpperCase()+"</li>");
+    $(listEl).attr("class","list-group-item");
+    $(listEl).attr("data-value",c.toUpperCase());
+    $(".list-group").append(listEl);
+}
+
+function invokePastSearch(event){
+    var liEl=event.target;
+    if (event.target.matches("li")){
+        city=liEl.textContent.trim();
+        currentWeather(city);
     }
+
 }
 
-searchButton.addEventListener('click', beginSearch);
+function loadlastCity(){
+    $("ul").empty();
+    var sCity = JSON.parse(localStorage.getItem("cityname"));
+    if(sCity!==null){
+        sCity=JSON.parse(localStorage.getItem("cityname"));
+        for(i=0; i<sCity.length;i++){
+            addToList(sCity[i]);
+        }
+        city=sCity[i-1];
+        currentWeather(city);
+    }
 
+}
 
+//Allows the clear button to clear previous searches
+function clearHistory(event){
+    event.preventDefault();
+    sCity=[];
+    localStorage.removeItem("cityname");
+    document.location.reload();
 
-/*
-We want to capture the user's input and store it in a variable.
-We will use the variable in our query to OpenWeather's API, i.e. include it as a parameter value
-Once the query is sent, we want to analyze and uderstand the information we retrieved
-Once we understand the format and content of the information, we will call a function
-to do something (i.e. embed that information in our HTML page) with the retrieved information.
-*/
+}
+
+$("#search-button").on("click",displayWeather);
+$(document).on("click",invokePastSearch);
+$(window).on("load",loadlastCity);
+$("#clear-history").on("click",clearHistory);
